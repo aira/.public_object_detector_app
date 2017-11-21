@@ -31,7 +31,7 @@ categories = label_map_util.convert_label_map_to_categories(label_map, max_num_c
 category_index = label_map_util.create_category_index(categories)
 
 
-def detect_objects(image_np, sess, detection_graph, utterance_frames=20):
+def detect_objects(image_np, sess, detection_graph, update_rate=10, speech_rate=250):
     # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
     image_np_expanded = np.expand_dims(image_np, axis=0)
     image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
@@ -66,7 +66,7 @@ def detect_objects(image_np, sess, detection_graph, utterance_frames=20):
                          scores=np.squeeze(scores), category_index=category_index)
     if not update_state.i % utterance_frames:
         description = describe_state(state)
-        say(description)
+        say(description, rate=args.speech_rate)
     return image_np
 
 
@@ -98,28 +98,44 @@ def worker(input_q, output_q):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-src', '--source', dest='video_source', type=int,
-                        default=0, help='Device index of the camera.')
-    parser.add_argument('-wd', '--width', dest='width', type=int,
-                        default=480, help='Width of the frames in the video stream.')
-    parser.add_argument('-ht', '--height', dest='height', type=int,
+    parser.add_argument('-s', '--source', dest='video_source', type=str,
+                        default=0, help='Device index of the camera or socket path to the video.')
+    parser.add_argument('-h', '--height', dest='height', type=int,
                         default=360, help='Height of the frames in the video stream.')
-    parser.add_argument('-num-w', '--num-workers', dest='num_workers', type=int,
+    parser.add_argument('-w', '--width', dest='width', type=int,
+                        default=480, help='Width of the frames in the video stream.')
+    parser.add_argument('-n', '--num-workers', dest='num_workers', type=int,
                         default=2, help='Number of workers.')
-    parser.add_argument('-q-size', '--queue-size', dest='queue_size', type=int,
+    parser.add_argument('-q', '--queue-size', dest='queue_size', type=int,
                         default=5, help='Size of the queue.')
+
+    parser.add_argument('-f', '--window', '--window-frames', dest='window', type=int,
+                        default=10, help='Length of the window in frames, objects within a window are consolidated together.')
+    parser.add_argument('-u', '--update', '--update-rate', dest='update_rate', type=int,
+                        default=-1, help='Voice naration update rate in frames. (default=-1, =window length) 0=never (wait for queries).')
+    parser.add_argument('-r', '--rate', '--speech-rate', dest='speech_rate', type=int,
+                        default=10, help='Voice speech rate in wps (default=250)')
     args = parser.parse_args()
 
+    try:
+        args.video_source = int(args.video_source)
+    except ValueError:
+        pass
     logger = multiprocessing.log_to_stderr()
     logger.setLevel(multiprocessing.SUBDEBUG)
 
     input_q = Queue(maxsize=args.queue_size)
     output_q = Queue(maxsize=args.queue_size)
     pool = Pool(args.num_workers, worker, (input_q, output_q))
+    update_state.window = args.window
+    update_state.update_rate = args.updatewindow
 
-    video_capture = WebcamVideoStream(src=args.video_source,
-                                      width=args.width,
-                                      height=args.height).start()
+    if isinstance(args.video_source, int):
+        video_capture = WebcamVideoStream(src=args.video_source,
+                                          width=args.width,
+                                          height=args.height).start()
+    else:
+
     fps = FPS().start()
 
     while True:  # fps._numFrames < 120
