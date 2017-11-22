@@ -64,7 +64,8 @@ def detect_objects(image_np, sess, detection_graph, update_rate=10, speech_rate=
     state = update_state(boxes=np.squeeze(boxes),
                          classes=np.squeeze(classes).astype(np.int32),
                          scores=np.squeeze(scores), category_index=category_index)
-    if not update_state.i % utterance_frames:
+    if not update_state.i % args.update_rate:
+        state = consolidate_states(states=update_state.states, row=update_state.i)
         description = describe_state(state)
         say(description, rate=args.speech_rate)
     return image_np
@@ -114,7 +115,7 @@ if __name__ == '__main__':
     parser.add_argument('-u', '--update', '--update-rate', dest='update_rate', type=int,
                         default=-1, help='Voice naration update rate in frames. (default=-1, =window length) 0=never (wait for queries).')
     parser.add_argument('-r', '--rate', '--speech-rate', dest='speech_rate', type=int,
-                        default=10, help='Voice speech rate in wps (default=250)')
+                        default=240, help='Voice speech rate in wps (default=250)')
     args = parser.parse_args()
 
     try:
@@ -135,7 +136,10 @@ if __name__ == '__main__':
                                           width=args.width,
                                           height=args.height).start()
     else:
-
+        # FIXME: research CaptureVideo etc for websocket stream
+        video_capture = WebcamVideoStream(src=0,
+                                          width=args.width,
+                                          height=args.height).start()
     fps = FPS().start()
 
     while True:  # fps._numFrames < 120

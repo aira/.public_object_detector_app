@@ -123,13 +123,13 @@ def pluralize(s):
         return word + 's'
 
 
-def update_state(boxes, classes, scores, category_index, window=10, max_boxes_to_draw=None, min_score_thresh=.4):
+def update_tsate(boxes, classes, scores, category_index, window=10, max_boxes_to_draw=None, min_score_thresh=.4):
     """ Revise state based on latest frame of information (object boxes)
 
     Args:
         boxes (list): 2D numpy array of shape (N, 4): (ymin, xmin, ymax, xmax), in normalized format between [0, 1].
         classes,
-    Args (that should be class attributes):
+    Args (thats hould be class attributes):
         category_index (dict of dicts): {1: {'id': 1, 'name': 'person'}, 2: {'id': 2, 'name': 'bicycle'},...}
 
     """
@@ -137,7 +137,7 @@ def update_state(boxes, classes, scores, category_index, window=10, max_boxes_to
 
     if update_state.states is None:
         # Initialize a matrix of state vectors for the past 20 frames
-        update_state.i = 0
+        update_state.row = 0
         update_state.window = 20
         update_state.columns = pd.DataFrame(list(category_index.values())).set_index('id', drop=True)['name']
         update_state.states = pd.DataFrame(pd.np.zeros((20, len(category_index)), dtype=int), columns=update_state.columns)
@@ -152,10 +152,13 @@ def update_state(boxes, classes, scores, category_index, window=10, max_boxes_to
             print(display_str)
             state += [class_name]
     state = collections.Counter(state)
-    update_state.states.iloc[i % len(update_state.states), :] = pd.Series(state)
+    update_state.states.iloc[update_state.row, :] = pd.Series(state)
     state = sorted(list(state.items()))
-    i = (i + 1) % len(update_state.states)  # update_state.window
+    update_state.row = (update_state.row + 1) % len(update_state.states)  # update_state.window
     return state
+
+
+def consolidate_states()
 
 
 update_state.states = None
@@ -175,7 +178,7 @@ def describe_state(state):
     return description
 
 
-def say(s, rate=230):
+def say(s, rate=240):
     """ Convert text to speech (TTS) and play resulting audio to speakers
 
     If "say" command is not available in os.system then print the text to stdout.
