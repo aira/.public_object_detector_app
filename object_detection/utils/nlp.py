@@ -123,7 +123,7 @@ def pluralize(s):
         return word + 's'
 
 
-def update_tsate(boxes, classes, scores, category_index, window=10, max_boxes_to_draw=None, min_score_thresh=.4):
+def update_state(boxes, classes, scores, category_index, window=10, max_boxes_to_draw=None, min_score_thresh=.4):
     """ Revise state based on latest frame of information (object boxes)
 
     Args:
@@ -158,7 +158,8 @@ def update_tsate(boxes, classes, scores, category_index, window=10, max_boxes_to
     return state
 
 
-def consolidate_states()
+def consolidate_states():
+    pass
 
 
 update_state.states = None

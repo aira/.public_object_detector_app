@@ -101,9 +101,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--source', dest='video_source', type=str,
                         default=0, help='Device index of the camera or socket path to the video.')
-    parser.add_argument('-h', '--height', dest='height', type=int,
+    parser.add_argument('-H', '-dy', '--height', dest='height', type=int,
                         default=360, help='Height of the frames in the video stream.')
-    parser.add_argument('-w', '--width', dest='width', type=int,
+    parser.add_argument('-W', '-dx', '--width', dest='width', type=int,
                         default=480, help='Width of the frames in the video stream.')
     parser.add_argument('-n', '--num-workers', dest='num_workers', type=int,
                         default=2, help='Number of workers.')

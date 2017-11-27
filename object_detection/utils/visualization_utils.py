@@ -232,15 +232,15 @@ def draw_bounding_boxes_on_image(image,
   """
   boxes_shape = boxes.shape
   if not boxes_shape:
-      return
+    return
   if len(boxes_shape) != 2 or boxes_shape[1] != 4:
-      raise ValueError('Input must be of size [N, 4]')
+    raise ValueError('Input must be of size [N, 4]')
   for i in range(boxes_shape[0]):
-      display_str_list = ()
-      if display_str_list_list:
-          display_str_list = display_str_list_list[i]
-      draw_bounding_box_on_image(image, boxes[i, 0], boxes[i, 1], boxes[i, 2],
-                                 boxes[i, 3], color, thickness, display_str_list)
+    display_str_list = ()
+    if display_str_list_list:
+      display_str_list = display_str_list_list[i]
+    draw_bounding_box_on_image(image, boxes[i, 0], boxes[i, 1], boxes[i, 2],
+                               boxes[i, 3], color, thickness, display_str_list)
 
 
 def draw_keypoints_on_image_array(image,
@@ -317,10 +317,9 @@ def draw_mask_on_image_array(image, mask, color='red', alpha=0.7):
   solid_color = np.expand_dims(
       np.ones_like(mask), axis=2) * np.reshape(list(rgb), [1, 1, 3])
   pil_solid_color = Image.fromarray(np.uint8(solid_color)).convert('RGBA')
-  pil_mask = Image.fromarray(np.uint8(255.0*alpha*mask)).convert('L')
+  pil_mask = Image.fromarray(np.uint8(255.0 * alpha * mask)).convert('L')
   pil_image = Image.composite(pil_solid_color, pil_image, pil_mask)
   np.copyto(image, np.array(pil_image.convert('RGB')))
-
 
 
 def visualize_boxes_and_labels_on_image_array(image,
@@ -332,7 +331,7 @@ def visualize_boxes_and_labels_on_image_array(image,
                                               keypoints=None,
                                               use_normalized_coordinates=False,
                                               max_boxes_to_draw=20,
-                                              min_score_thresh=.4,
+                                              min_score_thresh=.5,
                                               agnostic_mode=False,
                                               line_thickness=4):
   """Overlay labeled boxes on an image with formatted scores and label names.
@@ -421,4 +420,4 @@ def visualize_boxes_and_labels_on_image_array(image,
           color=color,
           radius=line_thickness / 2,
           use_normalized_coordinates=use_normalized_coordinates)
-    return
+  return
