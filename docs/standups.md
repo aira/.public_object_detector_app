@@ -43,7 +43,7 @@ libstreaming library crashing on android emulator (android studio) faster pro em
 ### parking lot
 
 * permissions problem only happens with first install of the app, not with each new release, so that's good
-* RTSP server: link had prod....pemdosa...servernum...port/live/stream example urls only have server num and port, 
-* alex forgot to send link to ginimotion -- rapid android emulation
+* RTSP server: link had `rtsp://prod*pemdosa*{servernum}:{port}/live/stream` example urls only have server num and port, 
+* alex forgot to send link to gennymotion -- rapid android emulation
 * talk about CI, sh scripts that call python scripts
 * CICD apps released through bitrise 
