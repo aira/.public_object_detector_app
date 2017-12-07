@@ -63,7 +63,7 @@ def detect_objects(image_np, sess, detection_graph, utterance_frames=20):
     state = update_state(boxes=np.squeeze(boxes),
                          classes=np.squeeze(classes).astype(np.int32),
                          scores=np.squeeze(scores), category_index=category_index)
-    if not update_state.i % utterance_frames:
+    if not update_state.row % utterance_frames:
         description = describe_state(state)
         say(description)
     return image_np
@@ -99,6 +99,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-src', '--source', dest='video_source', type=int,
                         default=0, help='Device index of the camera.')
+    parser.add_argument('-u', '--url', dest='video_stream_source', type=str,
+                        help='Url for rtsp stream. Don\'t use with `-src` argument')
     parser.add_argument('-wd', '--width', dest='width', type=int,
                         default=480, help='Width of the frames in the video stream.')
     parser.add_argument('-ht', '--height', dest='height', type=int,
@@ -116,7 +118,12 @@ if __name__ == '__main__':
     output_q = Queue(maxsize=args.queue_size)
     pool = Pool(args.num_workers, worker, (input_q, output_q))
 
-    video_capture = WebcamVideoStream(src=args.video_source,
+    source = args.video_stream_source
+
+    if source is None:
+        source = args.video_source
+
+    video_capture = WebcamVideoStream(src=source,
                                       width=args.width,
                                       height=args.height).start()
     fps = FPS().start()
