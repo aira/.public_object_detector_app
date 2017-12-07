@@ -95,7 +95,7 @@ def worker(input_q, output_q):
     sess.close()
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-src', '--source', dest='video_source', type=int,
                         default=0, help='Device index of the camera.')
@@ -150,3 +150,7 @@ if __name__ == '__main__':
     pool.terminate()
     video_capture.stop()
     cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    main()
