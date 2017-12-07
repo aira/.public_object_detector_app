@@ -90,3 +90,7 @@ ENV/
 
 # Custom
 .idea/
+
+# data
+*.tgz
+*.tar.gz
