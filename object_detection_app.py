@@ -99,8 +99,8 @@ def worker(input_q, output_q, state_q, voice_on=False):
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         if state_q.full():
-            state_q.get()
-            state_q.get()
+            for _ in range(len(state_q) - 2):
+                state_q.get()
 
         output_q.put(detect_objects(frame_rgb, sess, detection_graph, state_q, voice_on=voice_on))
 
