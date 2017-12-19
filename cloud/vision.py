@@ -1,6 +1,10 @@
 import io
+import os
 from google.cloud import vision
 from google.cloud.vision import types
+
+# setting the JSON file to be the environment variable required by GCV
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'apikey.json'
 
 # Instantiates a client
 client = vision.ImageAnnotatorClient()
