@@ -1,7 +1,7 @@
 from nlp.dispatch import Dispatchable
 from nlp.core import pluralize, describe_scene
 import typing
-import object_detection.constants
+import object_detection.constants as const
 
 
 class CountObjects(Dispatchable):
@@ -12,7 +12,9 @@ class CountObjects(Dispatchable):
     def __call__(self, payload):
         state = self.state_q.get()
 
-        categories = set([obj['category'] for obj in state])
+        vec = const.to_object_series_list(state)
+
+        categories = set([obj['category'] for obj in vec])
 
         target = self._get_target_object(payload, categories)
 
