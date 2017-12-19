@@ -49,5 +49,7 @@ class ObjectSeries(pd.Series):
         return self[self.BB_KEYS]
 
 
-
-
+def to_object_series_list(state):
+    if type(state[0]) is not ObjectSeries:
+        return [ObjectSeries(obj, index=OBJECT_VECTOR_KEYS) for obj in state]
+    return state

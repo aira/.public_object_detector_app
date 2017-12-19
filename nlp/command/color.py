@@ -16,10 +16,7 @@ class DescribeObjectColor(Dispatchable):
 
         if state:
 
-            if type(state[0]) is not constants.ObjectSeries:
-                vecs = to_object_series_list(state)
-            else:
-                vecs = state
+            vecs = constants.to_object_series_list(state)
 
             center_vecs = list(filter(lambda v: position(v.obj_bbox) is 'center', vecs))
 
@@ -53,7 +50,4 @@ class DescribeSceneColor(Dispatchable):
     def get_scene_color(self):
         pass
 
-
-def to_object_series_list(state):
-    return [constants.ObjectSeries(obj, index=constants.OBJECT_VECTOR_KEYS) for obj in state]
 

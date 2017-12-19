@@ -84,7 +84,9 @@ def update_state(image, boxes, classes, scores, category_index, window=10, max_b
     return object_vectors
 
 
-def describe_scene(object_vectors):
+def describe_scene(object_vectors, *,
+                   include_categories: typing.Optional[typing.List[str]] = None,
+                   include_color: bool = True, include_position: bool = True) -> str:
     """ Convert a state vector dictionary of objects and their counts into a natural language string
 
             categ inst,  conf, x   y  z  wdth hght dpth blk wht red orng  yel  grn  cyn  blu purp pink
@@ -98,7 +100,10 @@ def describe_scene(object_vectors):
     """
     feature_list = list(map(object_features, object_vectors))
 
-    plural_descriptions = aggregate_descriptions_by_features(feature_list)
+    plural_descriptions = aggregate_descriptions_by_features(feature_list,
+                                                             include_categories=include_categories,
+                                                             include_color=include_color,
+                                                             include_position=include_position)
 
     delim_description = compose_comma_series(plural_descriptions)
 
@@ -106,6 +111,7 @@ def describe_scene(object_vectors):
 
 
 def aggregate_descriptions_by_features(feature_list, *,
+                                       include_categories: typing.Optional[typing.List[str]] = None,
                                        include_color: bool = True, include_position: bool = True) -> typing.List[str]:
     """Produce a list of descriptions created through aggregations (counts) of objects in the scene.
 
@@ -157,6 +163,9 @@ def aggregate_descriptions_by_features(feature_list, *,
         >>> diff_no_pos = aggregate_descriptions_by_features(feature_list, include_position=False)
         >>> '2 black cups' in diff_no_pos
         True
+        >>> no_cups = aggregate_descriptions_by_features(feature_list, include_categories=['ski'])
+        >>> len(no_cups) == 1 and 'cup' not in no_cups[0] and 'cups' not in no_cups[0] and 'ski' in no_cups[0]
+        True
     """
 
     def include_features(f):
@@ -174,7 +183,13 @@ def aggregate_descriptions_by_features(feature_list, *,
 
         return tuple(fs)
 
-    included = list(map(include_features, feature_list))
+    def include_category(f):
+        if include_categories is not None:
+            return f[0] in include_categories
+        return True
+
+    filtered_categories = filter(include_category, feature_list)
+    included = list(map(include_features, filtered_categories))
 
     counts = Counter(included)
 
