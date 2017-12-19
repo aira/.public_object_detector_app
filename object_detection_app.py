@@ -1,38 +1,23 @@
-import os
-import cv2
 import time
 import argparse
 import multiprocessing
+
 import numpy as np
+import cv2
 import tensorflow as tf
 
 from utils.app_utils import FPS, WebcamVideoStream
 from multiprocessing import Queue, Pool
-from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
-from nlp import update_state, describe_state, say
+from nlp import describe_scene, say, update_state
 from nlp.dispatch import mqttc, dispatcher
-from nlp.command.describe import Describe
-
-CWD_PATH = os.getcwd()
-
-# Path to frozen detection graph. This is the actual model that is used for the object detection.
-MODEL_NAME = 'ssd_mobilenet_v1_coco_11_06_2017'
-PATH_TO_CKPT = os.path.join(CWD_PATH, 'object_detection', MODEL_NAME, 'frozen_inference_graph.pb')
-
-# List of the strings that is used to add correct label for each box.
-PATH_TO_LABELS = os.path.join(CWD_PATH, 'object_detection', 'data', 'mscoco_label_map.pbtxt')
-
-# Loading label map
-label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
-print(label_map)
-
-# though mobilenet can handle
-categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=90, use_display_name=True)
-category_index = label_map_util.create_category_index(categories)
+from nlp.command import DescribeScene, DescribeObjectColor
 
 
-def detect_objects(image_np, sess, detection_graph, _state_q, utterance_frames=20, voice_on=False):
+from object_detection.constants import CATEGORY_INDEX, PATH_TO_CKPT
+
+
+def detect_objects(image_np, sess, detection_graph, _state_q, voice_on=False):
     # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
     image_np_expanded = np.expand_dims(image_np, axis=0)
     image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
@@ -57,22 +42,22 @@ def detect_objects(image_np, sess, detection_graph, _state_q, utterance_frames=2
         np.squeeze(boxes),
         np.squeeze(classes).astype(np.int32),
         np.squeeze(scores),
-        category_index,
+        CATEGORY_INDEX,
         use_normalized_coordinates=True,
         line_thickness=8)
 
     # Describe the image
-    state = update_state(boxes=np.squeeze(boxes),
-                         classes=np.squeeze(classes).astype(np.int32),
-                         scores=np.squeeze(scores), category_index=category_index)
+    object_vectors = update_state(image=image_np, boxes=np.squeeze(boxes),
+                                  classes=np.squeeze(classes).astype(np.int32),
+                                  scores=np.squeeze(scores), category_index=CATEGORY_INDEX)
 
-    # Persists image state in a queue
-    _state_q.put(state)
+    # Persists image state (list of object vectors for that image) in a queue
+    _state_q.put(object_vectors)
 
-    if not update_state.i % utterance_frames:
-        description = describe_state(state)
-        if voice_on:
-            say(description)
+    # FIXME: this should not be happening here, but should be happening in the commands.py executive logic
+    description = describe_scene(object_vectors)
+    if voice_on:
+        say(description)
     return image_np
 
 
@@ -137,7 +122,8 @@ if __name__ == '__main__':
     output_q = Queue(maxsize=args.queue_size)
     state_q = Queue(maxsize=args.state_queue_size)
 
-    dispatcher['describe'] = Describe(state_q)
+    dispatcher['color'] = DescribeObjectColor(state_q)
+    dispatcher['describe'] = DescribeScene(state_q)
 
     pool = Pool(args.num_workers, worker, (input_q, output_q, state_q, args.voice_on))
 
@@ -182,4 +168,3 @@ if __name__ == '__main__':
     video_capture.stop()
     if disp_graphics:
         cv2.destroyAllWindows()
-

@@ -1,3 +1,5 @@
+
+# TODO: only list exceptions that are not easy to generate using simple "add s" rules.
 PLURALS = {
     'apple': 'apples',
     'backpack': 'backpacks',
@@ -79,3 +81,6 @@ PLURALS = {
     'vase': 'vases',
     'wine glass': 'wine glasses',
     'zebra': 'zebras'}
+
+
+SINGULAR = dict(list(zip(PLURALS.values(), PLURALS.keys())))

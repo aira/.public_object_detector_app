@@ -14,5 +14,8 @@ dependencies:
 - pip:
   - tensorflow==1.2.0
   - paho-mqtt
+  - scipy==1.0.0
+  - sklearn
+  - scikit-image
 prefix: /usr/local/anaconda3/envs/object-detection
 

@@ -14,9 +14,10 @@ import os
 import typing
 
 import paho.mqtt.client as mqtt
-
-EXPLORER_TOPIC = 'nsf/explorer/command'
-AI_TOPIC = 'nsf/ai/response'
+USER_ID = 1234
+EXPLORER_SUB_TOPIC = 'dev/chloe/explorer/{}/statement'.format(USER_ID)
+AGENT_TOPIC = 'dev/chloe/agent/{}/response'.format(USER_ID)
+# EXPLORER_PUB_TOPIC = 'dev/chloe/explorer/{}/response'.format(USER_ID)
 
 
 # Define event callbacks
@@ -68,7 +69,7 @@ port = int(os.environ.get('AIRAMQTT_PORT', '1883'))
 
 
 mqttc.connect(url_str, port, 60)
-mqttc.subscribe(EXPLORER_TOPIC, 0)
+mqttc.subscribe(EXPLORER_SUB_TOPIC, 0)
 
 
 def interp_command(cmd_str: str, actions: typing.List[str]) -> str:
@@ -99,7 +100,7 @@ def interp_command(cmd_str: str, actions: typing.List[str]) -> str:
 
 class Dispatchable:
     client = mqttc
-    root_topic = AI_TOPIC
+    root_topic = AGENT_TOPIC
 
     def send(self, payload: typing.Dict, *, subtopic: typing.List[str] = list()):
         payload_json = json.dumps(payload)

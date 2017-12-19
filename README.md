@@ -3,8 +3,37 @@
 A real-time object recognition application using [Google's TensorFlow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection) and [OpenCV](http://opencv.org/).
 
 ## Getting Started
-1. `conda env create -f environment.yml`
-2. `python object_detection_app.py`
+
+Install Anaconda according to the instructions [here](https://docs.anaconda.com/anaconda/install/).
+
+Make sure your python package installer, `pip`, is updated to use the Anaconda version:
+
+```bash
+$ conda install pip
+```
+
+Clone the repo to your local machine in whatever folder you use to hold source code, like ~/src/
+
+```bash
+$ mkdir ~/src
+$ cd ~/src
+$ git clone https://github.com/aira/object_detector_app
+$ cd object_detector_app
+```
+
+Create a new Anaconda environment on your machine to hold tensorflow, python 3.5, OpenCV, etc. This will take a while:
+
+`conda env create -f environment.yml`
+
+Check to make sure you're using the python that's in your conda environment: `which python` should have a path that indicates anaconda and the object-detection environment.
+
+If it is not where you have installed the conda environment, you need to change the source for python
+
+    * `head environment.yml` and look at the first line of the file which should say something like `name: object-detection`.         We are interested in the name of the file.
+    * `source activate name` where name will be replaced with what was stated in your environment.yml file
+    * `which python` and this time the place where you installed conda will show up
+
+5. `python object_detection_app.py`
     Optional arguments (default value):
     * Show all commands `--help`
     * Device index of the camera `--source=0`
@@ -36,7 +65,7 @@ python -m unittest discover -s object_detection -p "*_test.py"
 ### API 
 Our API is accessible via the MQTT protocol.
 
-#### `dev/chloe/explorer/statement`
+#### Android --> Chloe `dev/chloe/explorer/<userid>/statement`
 We subscribe to a topic coming from an Android client. Incoming messages should be encoded as JSON objects that match
 the following format: 
 
@@ -51,8 +80,8 @@ the following format:
 }
 ```
 
-#### `dev/chloe/response/<userid>/<action>`
-We publish to the root topic `dev/chloe/response` via subtopics scoped by the end user's id and the desired action. For instance, if we expect the client with id `1324234` to read the text response aloud (i.e. the `say` action), we will publish to the following topic path: `dev/chloe/response/1324234/say`. 
+
+#### Any --> Explorer `dev/chloe/explorer/<userid>/response`
 
 Messages should be encoded as JSON objects in the following format: 
 
@@ -72,6 +101,7 @@ Messages should be encoded as JSON objects in the following format:
   "args": ["arg1", "arg2", "arg3"], // **Prefer kwargs to args**
   "kwargs": {
     "confidence": 0.87,  // argument that should always be present
+    "source": "chloe" // or "human", should always be present
     "key1": 1,
     "key2": "kwarg2"
   },
@@ -82,7 +112,7 @@ Messages should be encoded as JSON objects in the following format:
 
 TODO(Alex) Revise
 Here is an example of a response for "say":
-Topic: `nsf/ai/say`
+Topic: `dev/chloe/explorer/12345/response`
 Payload: 
 ```json
 {
@@ -97,12 +127,15 @@ Payload:
   "args": [], 
   "kwargs": {
     "confidence": 0.87,
+    "source": "chloe"
     "text": "there is 1 person and a chair around you",
     "wordsPerMin": 200,
     "voiceGender": "Female"
   }
 }
 ```
+#### Chloe --> Test Harness/Agent `dev/chloe/agent/<userid>/response`
+The test harness gets the same message as the above section.
 
 ### Agent-Chloe Experiment Configuration Discussion
 - Should be configured on dashboard. 
