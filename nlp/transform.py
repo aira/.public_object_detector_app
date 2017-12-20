@@ -1,6 +1,5 @@
 def normalize_position(image, box):
     """ Takes in an image which will be provided and then computes the normalized bouding box information.
-
     Args:
         image (3D np.array): (rows, columns, channels)
             rows (int): width of image
@@ -12,9 +11,7 @@ def normalize_position(image, box):
             xmax (int): right most edge of the bounding box
             ymin (int): lowest edge of the bounding box
             ymax (int): highest edge of the bouding box
-
     From image, try to get image width and height such that we can scale it appropriately
-
         (xmin,ymax).    (xmax,ymax)
         ---------------
         |             |
@@ -24,8 +21,6 @@ def normalize_position(image, box):
         |             |
         ________________
         (xmin,ymin)     (xmax,ymin)
-
-
     Returns:
         tuple: (x, y, z, widht, height, depth)
             x (float): left most point and is scaled between -1 and 1. to scale, can do (xmin-image_width/2)/(image_width/2)
@@ -34,7 +29,6 @@ def normalize_position(image, box):
             width (float):this is defined as xmax-xmin. to scale, compute (xmax-xmin)/(image_width/2)
             height (float): this is defined as ymax-ymin. to scale, compute (ymax-ymin)/(image_height/2)
             depth (float): set to 0
-
         (x,y+height).   (x+width, y+height)
         ---------------
         |             |
@@ -44,8 +38,6 @@ def normalize_position(image, box):
         |             |
         ________________
         (x,y)           (x+width,y)
-
-
     >>> from skimage.data import coffee
     >>> img = coffee()
     >>> normalize_position(img,(50,100,50,100))
@@ -101,7 +93,6 @@ def estimate_distance(box):
         xmin (float): between value of 0 to 1 for the bounding box x value
         ymax (float): between value of 0 to 1 for the bounding box y value
         xmax (float): between value of 0 to 1 for the bounding box x value
-
     Returns : tuple : (x, y, z, width, height, depth)
         x (float): x-center of the bounding box
         y (float): y-center of the bounding box
@@ -109,7 +100,6 @@ def estimate_distance(box):
         width (float):this is defined as xmax-xmin.
         height (float): this is defined as ymax-ymin.
         depth (float): set to 0
-
     >>> estimate_distance((0.0,0.0,1.0,1.0))
     (0.5, 0.5, 0.0, 1.0, 1.0, 0.0)
     >>> estimate_distance((0.0, 0.0, 0.5, 1.0))
@@ -131,7 +121,6 @@ def estimate_distance(box):
 
 def position(normalized_box):
     """ takes an image and the bounding box, returns the position of the bounding box with respect to the image
-
     Args:
         normalized_box (tuple): (x, y, z, width, height, depth)
             x (float): x-center of the bounding box
@@ -140,11 +129,8 @@ def position(normalized_box):
             width (float):this is defined as xmax-xmin.
             height (float): this is defined as ymax-ymin.
             depth (float): set to 0
-
     Returns:
         string: 'left', 'right' or 'center'
-
-
     >>> normalized_box = estimate_distance((0.0,0.0,1.0,1.0))
     >>> position(normalized_box)
     'center'
