@@ -1,21 +1,21 @@
 ## Style Guide
 
 The primary goal is to produce readable code.
-This means being consistent with patterns used by many people, except when the "crowd" favors less readable layout or syntax.
+This means being consistent with patterns and style prefered by most python developers at corporations that build great stuff with python.
 
 
 ### [PEP8](https://www.python.org/dev/peps/pep-0008/) with these exceptions
 
 Follow the [Hettinger interpretation of PEP8](https://www.youtube.com/watch?v=wf-BqAjZb8M) for beautiful, readable code.
 
-* max line length is "about" 120 chars
-* max complexity: mccabe_threshold": 12,  # threshold limit for McCabe complexity checker.
-* type hints are encouraged but not required
+* max line length is "about" 120 chars (if you go a little over, don't worry about it)
+* max complexity: "mccabe_threshold": 12,  # McCabe complexity checker limits the number of conditional branches
+* type hints are a good idea on conditional branches that are rarely run, but duck-typing is preferred for mainline code
 
 Here's my Sublime Anaconda plugin configuration.
 
 
-```json
+```javascript
 {
     // Maximum McCabe complexity (number of conditional branches within a function).
     "mccabe_threshold": 7,
@@ -55,6 +55,21 @@ def add(value, num=0)
 
 ### Workflow
 
-* branch off master whenever you begin a new feature/task
-* commit often, mentioning the Jira ticket number in the comment, where possible (e.g. NSF-4)
-* brief active voice comments, with optional Jira transition commands: `git commit -am 'NSF-4 #start-review integrate location and color vectors'`)
+#### Branch off master
+
+whenever you begin a new feature/task:
+
+`git checkout master -b feature/my-awesome-new-feature`
+
+#### Commit often
+
+Mentioning the Jira ticket number in your, brief, active verb-tense comment (message)
+
+`git commit -am 'NSF-4 #start-review integrate location into description'`
+
+#### Transition your Jira Tickets
+
+Whenever you can, so save yourself the Jira GUI shuffle. But send it to "#start-review" (the QA stage) rather than #done:
+
+`git commit -am 'NSF-4 #start-review add color vectors'`
+

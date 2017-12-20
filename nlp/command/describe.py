@@ -2,7 +2,7 @@ from nlp import describe_scene
 from nlp.dispatch import Dispatchable
 
 
-class Describe(Dispatchable):
+class DescribeScene(Dispatchable):
 
     def __init__(self, state_q):
         self.state_q = state_q
@@ -13,4 +13,6 @@ class Describe(Dispatchable):
         if state:
             description = describe_scene(state)
 
-            self.send({'response': description}, subtopic=['say'])
+            self.send({'response': description})
+
+

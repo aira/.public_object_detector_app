@@ -1,2 +1,2 @@
-from nlp.command.color import DescribeColor
-from nlp.command.describe import Describe
+from nlp.command.color import DescribeObjectColor
+from nlp.command.describe import DescribeScene

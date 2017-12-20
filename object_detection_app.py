@@ -11,7 +11,7 @@ from multiprocessing import Queue, Pool
 from object_detection.utils import visualization_utils as vis_util
 from nlp import describe_scene, say, update_state
 from nlp.dispatch import mqttc, dispatcher
-from nlp.command import Describe, DescribeColor
+from nlp.command import DescribeScene, DescribeObjectColor
 
 
 from object_detection.constants import CATEGORY_INDEX, PATH_TO_CKPT
@@ -122,8 +122,8 @@ if __name__ == '__main__':
     output_q = Queue(maxsize=args.queue_size)
     state_q = Queue(maxsize=args.state_queue_size)
 
-    dispatcher['color'] = DescribeColor(state_q)
-    dispatcher['describe'] = Describe(state_q)
+    dispatcher['color'] = DescribeObjectColor(state_q)
+    dispatcher['describe'] = DescribeScene(state_q)
 
     pool = Pool(args.num_workers, worker, (input_q, output_q, state_q, args.voice_on))
 

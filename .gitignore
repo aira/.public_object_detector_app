@@ -90,6 +90,8 @@ ENV/
 
 # Custom
 .idea/
+log.txt
+pids.txt
 
 # tensorflow model weights
 *.tar.gz

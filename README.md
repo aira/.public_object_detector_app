@@ -4,15 +4,15 @@ A real-time object recognition application using [Google's TensorFlow Object Det
 
 ## Getting Started
 
-Install Anaconda according to the instructions [here](https://docs.anaconda.com/anaconda/install/).
+1. Install Anaconda according to the instructions [here](https://docs.anaconda.com/anaconda/install/).
 
-Make sure your python package installer, `pip`, is updated to use the Anaconda version:
+2. Make sure your python package installer, `pip`, is updated to use the Anaconda version:
 
 ```bash
 $ conda install pip
 ```
 
-Clone the repo to your local machine in whatever folder you use to hold source code, like ~/src/
+3. Clone the repo to your local machine in whatever folder you use to hold source code, like ~/src/
 
 ```bash
 $ mkdir ~/src
@@ -21,55 +21,59 @@ $ git clone https://github.com/aira/object_detector_app
 $ cd object_detector_app
 ```
 
-Create a new Anaconda environment on your machine to hold tensorflow, python 3.5, OpenCV, etc. This will take a while:
+4. Create a new Anaconda environment on your machine to hold tensorflow, python 3.5, OpenCV, etc. This will take a while:
 
 `conda env create -f environment.yml`
 
-Check to make sure you're using the python that's in your conda environment: `which python` should have a path that indicates anaconda and the object-detection environment.
+5. Check to make sure you're using the python that's in your conda environment
 
-If it is not where you have installed the conda environment, you need to change the source for python
+`which python` should have a path that indicates anaconda and the object-detection environment.
 
-    * `head environment.yml` and look at the first line of the file which should say something like `name: object-detection`.         We are interested in the name of the file.
-    * `source activate name` where name will be replaced with what was stated in your environment.yml file
-    * `which python` and this time the place where you installed conda will show up
+If it is not in a folder with your conda environment name (`object-detection` is the default), you need to activate your environment:
 
-5. `python object_detection_app.py`
-    Optional arguments (default value):
-    * Show all commands `--help`
-    * Device index of the camera `--source=0`
-    * Width of the frames in the video stream `--width=480`
-    * Height of the frames in the video stream `--height=360`
-    * Number of workers `--num-workers=2`
-    * Size of the queue `--queue-size=5`
-    * URL for video stream `--url=<rstp://...>`
-    * Turn on GUI (defaulted to run headless) `--gui`
-    * Turn on vocal commands on MacOS (defaulted to silent) `--say`
-    * State Buffer Size, how many "states" to capture `--state-queue-size=5`
+```markdown
+    5.1 `head environment.yml` -- 1st line should say something like `name: object-detection`  
+    5.2 `source activate object-detection` -- replace `object-detection` with your environment name   
+    5.3 `which python` -- make sure this is now correctly pointing to your conda environment path  
+```
+
+6. Start the app!
+
+```markdown
+    6.1 `python object_detection_app.py --help` to see all the options   
+    6.2 `python object_detection_app.py` to run it using your webcam but no GUI or verbalization
+```
 
 ## Development
+
 ### Updating the environment
+
 `conda env update -f environment.yml`
 
 ### Tests
-```
-pytest -vs utils/
-python -m pytest
-python -m unittest discover -s object_detection -p "*_test.py"
+
+```bash
+$ pytest -vs utils/
+$ python -m pytest
+$ python -m unittest discover -s object_detection -p "*_test.py"
 ```
 
 ### Requirements
+
 - [Anaconda / Python 3.5](https://www.continuum.io/downloads)
 - [TensorFlow 1.2](https://www.tensorflow.org/)
 - [OpenCV 3.0](http://opencv.org/)
 
 ### API 
+
 Our API is accessible via the MQTT protocol.
 
 #### Android --> Chloe `dev/chloe/explorer/<userid>/statement`
+
 We subscribe to a topic coming from an Android client. Incoming messages should be encoded as JSON objects that match
 the following format: 
 
-```json
+```javascript
 {
   "messageId": 123,
   "serviceId": 53453,
@@ -80,12 +84,11 @@ the following format:
 }
 ```
 
-
 #### Any --> Explorer `dev/chloe/explorer/<userid>/response`
 
 Messages should be encoded as JSON objects in the following format: 
 
-```json
+```javascript
 {
   "messageId": 124, // ID for the current payload
   "statementId": 123, // ID of statement payload (payload this is in response to, see above)
@@ -110,11 +113,15 @@ Messages should be encoded as JSON objects in the following format:
 }
 ```
 
-TODO(Alex) Revise
+#### Example Chloe Response . **TODO:** Revise
+
 Here is an example of a response for "say":
+
 Topic: `dev/chloe/explorer/12345/response`
-Payload: 
-```json
+
+Payload:
+
+```javascript
 {
   "messageId": 124, 
   "statementId": 123,
@@ -134,17 +141,20 @@ Payload:
   }
 }
 ```
+
 #### Chloe --> Test Harness/Agent `dev/chloe/agent/<userid>/response`
+
 The test harness gets the same message as the above section.
 
 ### Agent-Chloe Experiment Configuration Discussion
-- Should be configured on dashboard. 
-- Response to explorer should have a delay, whether they come from Chloe or the AI. The explorer should not be able to distinguish between human and machine. 
-- Want to design intentional fallback from the AI to the Human agent. Thus, we need two buttons: the random send (either AI or Human), and a **SEND!** that forcibly sends the human response over the AI. 
 
-## Notes
-- ~~OpenCV 3.1 might crash on OSX after a while, so that's why I had to switch to version 3.0. See open issue and solution [here](https://github.com/opencv/opencv/issues/5874).~~
-- Moving the `.read()` part of the video stream in a multiple child processes did not work. However, it was possible to move it to a separate thread.
+* Should be configured on dashboard.  
+* Responses to the explorer should have a similar delay, whether they come from Chloe or the AI. The explorer should not be able to distinguish between human and machine.  
+* Want to design intentional fallback from the AI to the Human agent. Thus, we need two buttons:
+
+1. the random send (either AI or Human)
+2. **SEND!** that forcibly sends the human response over the AI.  
 
 ## Copyright
+
 See [LICENSE](LICENSE) for details.
