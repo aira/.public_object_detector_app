@@ -17,5 +17,6 @@ dependencies:
   - scipy==1.0.0
   - sklearn
   - scikit-image
+  - google-cloud-vision
 prefix: /usr/local/anaconda3/envs/object-detection
 
