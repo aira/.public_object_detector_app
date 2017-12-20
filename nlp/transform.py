@@ -44,6 +44,8 @@ def normalize_position(image, box):
         |             |
         ________________
         (x,y)           (x+width,y)
+
+
     >>> from skimage.data import coffee
     >>> img = coffee()
     >>> normalize_position(img,(50,100,50,100))
@@ -128,7 +130,6 @@ def estimate_distance(box):
 
 
 def position(normalized_box):
-
     """ takes an image and the bounding box, returns the position of the bounding box with respect to the image
     Args:
         normalized_box (tuple): (x, y, z, width, height, depth)
