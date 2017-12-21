@@ -104,6 +104,7 @@ class Dispatchable:
 
     def send(self, payload: typing.Dict, *, subtopic: typing.List[str] = list()):
         payload_json = json.dumps(payload)
+        print(payload_json)
         if not subtopic:
             self.client.publish(self.root_topic, payload=payload_json)
         else:
