@@ -42,6 +42,7 @@ def on_log(client, obj, level, string):
 
 def on_message(client, obj, msg):
     try:
+        payload = {}
         json_string = str(msg.payload, 'utf-8')
         print('On msg: ' + json_string)
         payload = json.loads(json_string)
@@ -106,7 +107,7 @@ class Dispatchable:
     message_id = 0
 
     def send(self, payload: typing.Dict, *, subtopic: typing.List[str] = list()):
-        random_number = int(np.random.random_integers(0, 1000))
+        statement_id = payload.get('messageId', -1)
         timestamp = int((datetime.utcnow() - datetime(1970, 1, 1, 0, 0, 0, 0)).total_seconds() * 1000)
         code = "ch-vis-000"
         message = "success"
@@ -117,9 +118,9 @@ class Dispatchable:
         Dispatchable.message_id += 1
 
         data = {
-            "messageID": message_id,
+            "messageId": message_id,
             # FIXME: update with actual id from Android App
-            "statementID": random_number,
+            "statementId": statement_id,
             "timestamp": timestamp,
             "status":
             {
